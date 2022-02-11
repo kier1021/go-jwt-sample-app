@@ -36,20 +36,16 @@ func (lib *JWTLib) GenerateToken(payload map[string]interface{}) (string, error)
 
 	token, err := wc.SignedString([]byte(lib.secretKey))
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 
 	return token, nil
 }
 
 func (lib *JWTLib) ValidateToken(token string) (*jwt.Token, error) {
-
-	fmt.Println(token)
-
 	return jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
 		if _, isValid := token.Method.(*jwt.SigningMethodHMAC); !isValid {
 			return nil, fmt.Errorf("invalid token %s", token.Header["alg"])
-
 		}
 		return []byte([]byte(os.Getenv("APP_ACCESS_SECRET_KEY"))), nil
 	})
